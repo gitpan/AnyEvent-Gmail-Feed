@@ -2,7 +2,7 @@ package AnyEvent::Gmail::Feed;
 
 use strict;
 use 5.008_001;
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use AnyEvent;
 use AnyEvent::HTTP;
@@ -29,7 +29,9 @@ sub new {
     $uri .= $label . '/' if $label; ## 'unread' or whatever
 
     my %seen;
-    my $check_update; $check_update = sub {
+
+    my $timer;
+    my $checker; $checker = sub {
         http_get $uri, headers => $headers, sub {
             my ($body, $hdr) = @_;
             return unless $body;
@@ -40,11 +42,10 @@ sub new {
                 };
                 $seen{$e->id}++;
             }
-            sleep($interval);
-            $check_update->();
+            $timer = AnyEvent->timer( after => $interval, cb => $checker);
         };
     };
-    $check_update->();
+    $checker->();
     return $self;
 }
 
@@ -91,11 +92,13 @@ it under the same terms as Perl itself.
 
 =head1 SEE ALSO
 
+L<AnyEvent::Feed>
+
 L<AnyEvent>
 
 L<AnyEvent::HTTP>
 
-L<Atom::Feed::Entry>
+L<XML::Atom::Entry>
 
 L<http://code.google.com/apis/gdata/faq.html#GmailAtomFeed>
 

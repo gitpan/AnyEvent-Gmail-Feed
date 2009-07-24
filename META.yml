@@ -18,9 +18,10 @@ no_index:
 requires:
   AnyEvent: 0
   AnyEvent::HTTP: 0
+  MIME::Base64: 0
   Net::SSLeay: 0
   XML::Atom::Feed: 0
   perl: 5.8.1
 resources:
   license: http://dev.perl.org/licenses/
-version: 0.01
+version: 0.02
